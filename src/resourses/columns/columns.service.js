@@ -15,7 +15,6 @@ const getColumn = async id => {
 		await readFile(path.resolve(__dirname, '.', COL_REPO))
 	);
 	const current = columns.find(el => el.id === id);
-	console.log(current);
 	return Model.toResponse(current);
 };
 
@@ -23,7 +22,7 @@ const createColumn = async body => {
 	const columns = JSON.parse(
 		await readFile(path.resolve(__dirname, '.', COL_REPO))
 	);
-	const newColumn = new Model(body.title);
+	const newColumn = new Model(body);
 	columns.push(newColumn);
 	await writeFile(
 		path.resolve(__dirname, '.', COL_REPO),
@@ -37,8 +36,8 @@ const updateColumn = async (id, body) => {
 		await readFile(path.resolve(__dirname, '.', COL_REPO))
 	);
 	const index = columns.findIndex(el => el.id === id);
-	if (index !== -1){
-		сolumn[index].name = body.name;
+	if (index !== -1) {
+		columns[index].title = body.title || columns[index].title;
 		columns[index].tasks = [...body.tasks];
 		await writeFile(
 			path.resolve(__dirname, '.', COL_REPO),
@@ -53,15 +52,36 @@ const deleteColumn = async id => {
 	const columns = JSON.parse(
 		await readFile(path.resolve(__dirname, '.', COL_REPO))
 	);
-  const index = columns.findIndex(el => el.id === id);
-  if (index !== -1){
-  columns.splice(index, 1);
+	const index = columns.findIndex(el => el.id === id);
+	if (index !== -1) {
+		columns.splice(index, 1);
+		await writeFile(
+			path.resolve(__dirname, '.', COL_REPO),
+			JSON.stringify(columns)
+		);
+		return true;
+	} else return false;
+};
+
+const clearAllTasks = async taskId => {
+	const columns = JSON.parse(
+		await readFile(path.resolve(__dirname, '.', COL_REPO))
+	);
+	columns.forEach(col => {
+		const tasks = col.tasks.filter(task => task !== taskId);
+		col.tasks = [...tasks];
+	});
 	await writeFile(
 		path.resolve(__dirname, '.', COL_REPO),
 		JSON.stringify(columns)
 	);
-	return true;
-} else return false
 };
 
-module.exports = { getAll, createColumn, getColumn, updateColumn, deleteColumn };
+module.exports = {
+	getAll,
+	createColumn,
+	getColumn,
+	updateColumn,
+	deleteColumn,
+	clearAllTasks,
+};

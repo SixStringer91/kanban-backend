@@ -1,6 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { getAll, createColumn, getColumn, deleteColumn } = require('./columns.service');
+const {
+	getAll,
+	createColumn,
+	getColumn,
+	updateColumn,
+	deleteColumn,
+	clearAllTasks,
+} = require('./columns.service');
+
+const { deleteAll, getTask } = require('../tasks/tasks.service');
 
 router.route('/').get(async (_, res) => {
 	const columns = await getAll();
@@ -8,9 +17,10 @@ router.route('/').get(async (_, res) => {
 });
 
 router.route('/:id').get(async (req, res) => {
-	const current = await getColumn(req.params.columnId);
-  if (current) res.send(current);
-  else  res.status(404).send('Column not found');
+	const { id } = req.params;
+	const current = await getColumn(id);
+	if (current) res.send(current);
+	else res.status(404).send('Column not found');
 });
 
 router.route('/').post(async (req, res) => {
@@ -18,16 +28,24 @@ router.route('/').post(async (req, res) => {
 	res.send(newColumn);
 });
 
-router.route('/:id').put(async (req, res) => {
-	const updated = await updateColumn(req.params.id, req.body);
-	if (updated) res.send(updated);
-	else res.status(404).send('Column not found');
+router.route('/:id/tasks/:taskId').put(async (req, res) => {
+	const { id, taskId } = req.params;
+	const task = await getTask(taskId);
+	if (task) {
+		await clearAllTasks(taskId);
+		const updated = await updateColumn(id, req.body);
+		if (updated) res.send(updated);
+		else res.status(404).send('Column not found');
+	} else res.status(404).send('Task not found');
 });
 
 router.route('/:id').delete(async (req, res) => {
-	const deleted = await deleteColumn(req.params.id);
-  if (deleted) res.send(`column ${req.params.id} deleted`);
-  else res.status(404).send('column not found');
+	const { id } = req.params;
+	const deleted = await deleteColumn(id);
+	if (deleted) {
+		await deleteAll(id);
+		res.send(`column ${id} deleted`);
+	} else res.status(404).send('column not found');
 });
 
 module.exports = router;
