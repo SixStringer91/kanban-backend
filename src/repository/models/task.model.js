@@ -2,29 +2,36 @@ module.exports = class Task {
 	constructor({
 		title = 'some task',
 		description = 'description',
-		assignee = ''
+		assignee = [],
+		columnId
 	}) {
 		this.title = title;
-		this.id = `TASK${Date.now()}`;
 		this.publishDate = Date.now();
+		this.id = `TASK${this.publishDate}`;
 		this.description = description;
 		this.assignee = assignee;
+		this.columnId = columnId;
+		this.order = 0;
 	}
 
-	static toResponse(columns) {
+	static toResponse(task) {
 		const {
       title,
       id, 
       publishDate,
       description,
-      assignee
-    } = columns;
+      assignee,
+			order,
+			columnId
+    } = task;
 		return {
 			title,
 			id,
 			publishDate,
 			description,
 			assignee,
+			order,
+			columnId
 		};
 	}
 };

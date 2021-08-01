@@ -1,87 +1,17 @@
-const { readFile, writeFile } = require('fs').promises;
-const path = require('path');
-const Model = require('./columns.model');
-const COL_REPO = 'columns.repository.json';
+const db = require('../../repository/repository');
 
-const getAll = async () => {
-	const columns = JSON.parse(
-		await readFile(path.resolve(__dirname, '.', COL_REPO))
-	);
-	return columns;
-};
-
-const getColumn = async id => {
-	const columns = JSON.parse(
-		await readFile(path.resolve(__dirname, '.', COL_REPO))
-	);
-	const current = columns.find(el => el.id === id);
-	return Model.toResponse(current);
-};
-
-const createColumn = async body => {
-	const columns = JSON.parse(
-		await readFile(path.resolve(__dirname, '.', COL_REPO))
-	);
-	const newColumn = new Model(body);
-	columns.push(newColumn);
-	await writeFile(
-		path.resolve(__dirname, '.', COL_REPO),
-		JSON.stringify(columns)
-	);
-	return Model.toResponse(newColumn);
-};
-
-const updateColumn = async (id, body) => {
-	const columns = JSON.parse(
-		await readFile(path.resolve(__dirname, '.', COL_REPO))
-	);
-	const index = columns.findIndex(el => el.id === id);
-	if (index !== -1) {
-		columns[index].title = body.title || columns[index].title;
-		columns[index].tasks = [...body.tasks];
-		await writeFile(
-			path.resolve(__dirname, '.', COL_REPO),
-			JSON.stringify(columns)
-		);
-		return Model.toResponse(columns[index]);
-	}
-	return null;
-};
-
-const deleteColumn = async id => {
-	const columns = JSON.parse(
-		await readFile(path.resolve(__dirname, '.', COL_REPO))
-	);
-	const index = columns.findIndex(el => el.id === id);
-	if (index !== -1) {
-		columns.splice(index, 1);
-		await writeFile(
-			path.resolve(__dirname, '.', COL_REPO),
-			JSON.stringify(columns)
-		);
-		return true;
-	} else return false;
-};
-
-const clearAllTasks = async taskId => {
-	const columns = JSON.parse(
-		await readFile(path.resolve(__dirname, '.', COL_REPO))
-	);
-	columns.forEach(col => {
-		const tasks = col.tasks.filter(task => task !== taskId);
-		col.tasks = [...tasks];
-	});
-	await writeFile(
-		path.resolve(__dirname, '.', COL_REPO),
-		JSON.stringify(columns)
-	);
-};
+const getAll = async () => db.getAllColumns();
+const create = async body => db.createColumn(body);
+const getOne = async id => db.getColumn(id);
+const getTasks = async id => db.getTasksByColumn(id)
+const update = async (id, payload) => db.updateColumn(id, payload);
+const deleteOne = async id => db.deleteColumn(id);
 
 module.exports = {
 	getAll,
-	createColumn,
-	getColumn,
-	updateColumn,
-	deleteColumn,
-	clearAllTasks,
+	create,
+	getOne,
+	getTasks,
+	update,
+	deleteOne
 };
