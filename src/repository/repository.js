@@ -33,10 +33,14 @@ const getTasksByColumn = async columnId => {
 
 const createColumn = async body => {
 	const columns = await readRepo(COL_REPO);
-	const newColumn = new Column(body);
-	columns.push(newColumn);
-	await writeRepo(COL_REPO, columns);
-	return Column.toResponse(newColumn);
+	try {
+		const newColumn = new Column(body);
+		columns.push(newColumn);
+		await writeRepo(COL_REPO, columns);
+		return Column.toResponse(newColumn);
+	} catch {
+		return null;
+	}
 };
 
 const updateColumn = async (id, body) => {
@@ -88,7 +92,7 @@ const createTask = async body => {
 		...columnTasks.map((task, i) => ({ ...task, order: i })),
 	];
 	await writeRepo(TASKS_REPO, newTasks);
-	return Task.toResponse(columnTasks[0]);
+	return columnTasks;
 };
 
 const updateTask = async (id, body) => {
@@ -96,7 +100,7 @@ const updateTask = async (id, body) => {
 	try {
 		const updatedTasks = tasksHandler(id, body, tasks);
 		await writeRepo(TASKS_REPO, updatedTasks);
-		return Task.toResponse(updatedTasks.find(task => task.id === id));
+		return updatedTasks.filter(task => task.columnId === body.columnId);
 	} catch {
 		return null;
 	}
@@ -106,10 +110,11 @@ const deleteTask = async id => {
 	const tasks = await readRepo(TASKS_REPO);
 	const index = tasks.findIndex(el => el.id === id);
 	if (index !== -1) {
+		const columnId = tasks[index].columnId;
 		tasks.splice(index, 1);
 		await writeRepo(TASKS_REPO, tasks);
-		return true;
-	} else return false;
+		return tasks.filter(task => task.columnId === columnId);
+	} else return null;
 };
 
 const deleteAllTasks = async columnId => {

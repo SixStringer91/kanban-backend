@@ -30,7 +30,8 @@ router.route('/:id/tasks').get(async (req, res) => {
 
 router.route('/').post(async (req, res) => {
 	const newColumn = await create(req.body);
-	res.send(newColumn);
+	if(newColumn) res.send(newColumn);
+	else res.status(404).send('no enought params to create column');
 });
 
 router.route('/:id').put(async (req, res) => {
