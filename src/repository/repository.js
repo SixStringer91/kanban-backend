@@ -2,16 +2,17 @@ const { readFile, writeFile } = require('fs').promises;
 const path = require('path');
 const Column = require('./models/column.model');
 const Task = require('./models/task.model');
-const tasksHandler = require('../utils/task-handler');
+const { tasksHandler } = require('../utils/task-handler');
+const { TASKS_REPO, COL_REPO } = require('../utils/constanst');
 
-const COL_REPO = 'columns.repository.json';
-const TASKS_REPO = 'tasks.repository.json';
 
 const readRepo = async repo =>
 	JSON.parse(await readFile(path.resolve(__dirname, 'db', repo)));
 
-const writeRepo = async (repo, array) =>
-	await writeFile(path.resolve(__dirname, 'db', repo), JSON.stringify(array));
+const writeRepo = async (repo, array) => {
+	const written = await writeFile(path.resolve(__dirname, 'db', repo), JSON.stringify(array));
+	return written;
+};
 
 const getAllColumns = async () => readRepo(COL_REPO);
 
@@ -61,14 +62,14 @@ const deleteColumn = async id => {
 		columns.splice(index, 1);
 		await writeRepo(COL_REPO, columns);
 		return true;
-	} else return false;
+	} return false;
 };
 
 const clearAllTasks = async taskId => {
 	const columns = await readRepo(TASKS_REPO);
-	columns.forEach(col => {
+	columns.forEach((col, i) => {
 		const tasks = col.tasks.filter(task => task !== taskId);
-		col.tasks = [...tasks];
+		columns[i].tasks = [...tasks];
 	});
 	await writeRepo(COL_REPO, columns);
 };
@@ -110,11 +111,11 @@ const deleteTask = async id => {
 	const tasks = await readRepo(TASKS_REPO);
 	const index = tasks.findIndex(el => el.id === id);
 	if (index !== -1) {
-		const columnId = tasks[index].columnId;
+		const {columnId} = tasks[index];
 		tasks.splice(index, 1);
 		await writeRepo(TASKS_REPO, tasks);
 		return tasks.filter(task => task.columnId === columnId);
-	} else return null;
+	} return null;
 };
 
 const deleteAllTasks = async columnId => {

@@ -1,6 +1,5 @@
 const config = {
-  PORT: 8080
+  PORT: process.env.PORT || 80
 };
-
 
 module.exports = config;

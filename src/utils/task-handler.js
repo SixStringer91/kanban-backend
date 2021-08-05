@@ -39,4 +39,4 @@ const tasksHandler = (id, body, tasks) => {
 		: inAnotherColumnHandler(currentIndex, body, tasks);
 };
 
-module.exports = tasksHandler;
+module.exports = { tasksHandler };
