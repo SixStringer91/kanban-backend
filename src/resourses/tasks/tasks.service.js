@@ -7,10 +7,10 @@ const update = async (id, payload) => db.updateTask(id, payload);
 const deleteOne = async id => db.deleteTask(id);
 const deleteAll = async columnId => db.deleteAllTasks(columnId);
 module.exports = {
-	getAll,
-	create,
-	getOne,
-	update,
-	deleteOne,
-	deleteAll,
+  getAll,
+  create,
+  getOne,
+  update,
+  deleteOne,
+  deleteAll
 };

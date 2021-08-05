@@ -1,5 +1,9 @@
 const fs = require('fs');
-const { loggerErrors, uncaughtExceptionLogger, unhandledRejectionLogger } = require('./logger');
+const {
+  loggerErrors,
+  uncaughtExceptionLogger,
+  unhandledRejectionLogger
+} = require('./logger');
 
 const CODE = 500;
 
@@ -33,17 +37,14 @@ const uncaughtException = (err, origin) => {
 };
 
 const unhandledRejection = ({ message }) => {
-  fs.writeFileSync(
-    './crash-data.log',
-    `Caught exception: ${message})`
-  );
+  fs.writeFileSync('./crash-data.log', `Caught exception: ${message})`);
   unhandledRejectionLogger(message);
   process.exit(1);
 };
 
-module.exports={
+module.exports = {
   unhandledRejection,
   uncaughtException,
   handleError,
   ErrorHandler
-}
+};

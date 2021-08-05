@@ -1,11 +1,6 @@
 module.exports = class Column {
-  constructor(
-    {
-    title, 
-    color,
-    tasks = []
-    }) {
-    if(!title || !color) throw new Error();
+  constructor({ title, color, tasks = [] }) {
+    if (!title || !color) throw new Error();
     this.title = title;
     this.color = color;
     this.id = `COL${Date.now()}`;
@@ -13,11 +8,12 @@ module.exports = class Column {
   }
 
   static toResponse(columns) {
-    const {
-      title, id, tasks, color
-    } = columns;
+    const { title, id, tasks, color } = columns;
     return {
-      title, id, tasks, color
+      title,
+      id,
+      tasks,
+      color
     };
   }
-}
+};
