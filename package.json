@@ -1,0 +1,33 @@
+{
+  "name": "kanban-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "nodemonConfig": {
+    "ignore": [
+      "src/repository/db/*.json"
+    ]
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "lint":"eslint --ext .js,.ts --fix src/"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "eslint": "7.2.0",
+    "eslint-config-airbnb-base": "14.2.1",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-import": "2.22.1",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-prettier": "3.4.0",
+    "lint-staged": "10.5.4",
+    "prettier": "2.2.1",
+    "nodemon": "^2.0.12"
+  }
+}
